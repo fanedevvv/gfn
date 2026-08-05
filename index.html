@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFN Exploits</title>
+
+    <link rel="icon" type="image/svg+xml" href="download.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+<div class="grain"></div>
+
+<div class="hero">
+
+    <span class="eyebrow"><span class="dot"></span> GFN Exploits &middot; Cloud Desktop Mod</span>
+
+    <h1>
+        Turn GeForce NOW<br>
+        into a <span class="accent">full desktop.</span>
+    </h1>
+
+    <p>
+        Experience the best, most immersive evolution of the GFN Exploits.
+    </p>
+
+</div>
+
+<footer>
+
+    <a href="#" id="HomeBtn">Home</a>
+
+    <a href="#" id="DownloadBtn">Download</a>
+
+    <a href="#" id="featuresBtn">Features</a>
+
+    <a href="https://discord.gg/bdsJD2Uewm" target="_blank">
+        Discord
+    </a>
+
+</footer>
+
+<!-- FEATURES -->
+
+<div class="modal" id="modal">
+
+    <div class="window">
+
+        <span class="close" id="close">&times;</span>
+
+        <h2>Features</h2>
+
+        <div class="grid">
+
+            <div class="card">
+                <div class="icon-badge yellow-bg">
+                    <i data-lucide="zap" class="icon yellow"></i>
+                </div>
+
+                <h3>High Performance</h3>
+
+                <p>
+                    Optimized for maximum speed and stability.
+                </p>
+            </div>
+
+            <div class="card">
+
+                <div class="icon-badge green-bg">
+                    <i data-lucide="shield" class="icon green"></i>
+                </div>
+
+                <h3>Secure</h3>
+
+                <p>
+                    Safe updates with improved protection.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="icon-badge red-bg">
+                    <i data-lucide="rocket" class="icon red"></i>
+                </div>
+
+                <h3>Fast Updates</h3>
+
+                <p>
+                    Receive updates and bug fixes frequently.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="icon-badge purple-bg">
+                    <i data-lucide="gamepad-2" class="icon purple"></i>
+                </div>
+
+                <h3>Easy to Use</h3>
+
+                <p>
+                    Modern interface with one-click setup.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="icon-badge blue-bg">
+                    <i data-lucide="monitor" class="icon blue"></i>
+                </div>
+
+                <h3>Full Desktop</h3>
+
+                <p>
+                    Unlock the complete desktop experience.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <div class="icon-badge white-bg">
+                    <i data-lucide="cloud" class="icon white"></i>
+                </div>
+
+                <h3>Cloud Optimized</h3>
+
+                <p>
+                    Built specifically for cloud gaming sessions.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+lucide.createIcons();
+
+const modal = document.getElementById("modal");
+const btn = document.getElementById("featuresBtn");
+const close = document.getElementById("close");
+
+btn.onclick = (e)=>{
+
+    e.preventDefault();
+
+    modal.classList.add("show");
+
+}
+
+close.onclick = ()=>{
+
+    modal.classList.remove("show");
+
+}
+
+window.onclick = (e)=>{
+
+    if(e.target===modal){
+
+        modal.classList.remove("show");
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
