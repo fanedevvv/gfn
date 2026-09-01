@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/traffic_car.gd" id="1_traffic"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(1.8, 1.0, 4.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+size = Vector3(1.8, 1.0, 4.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.5, 0.5, 0.55, 1)
+
+[node name="TrafficCar" type="PathFollow3D"]
+script = ExtResource("1_traffic")
+
+[node name="AnimatableBody3D" type="AnimatableBody3D" parent="."]
+sync_to_physics = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AnimatableBody3D"]
+position = Vector3(0, 0.5, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="AnimatableBody3D"]
+position = Vector3(0, 0.5, 0)
+mesh = SubResource("BoxMesh_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_body")

@@ -16,6 +16,12 @@ extends Node3D
 ## mai ieftină din catalog. Ambele sunt doar pentru verificare rapidă —
 ## dispar când vine Garage UI-ul real, care va apela aceleași metode
 ## publice din Workshop/JunkyardVendor la click pe buton.
+##
+## Traseu de test pentru Trafic AI: construit direct din cod (Path3D +
+## Curve3D), un patrulater simplu de 80x80m în jurul originii, populat
+## automat cu TrafficSpawner. Într-un nivel real, drumurile se desenează
+## manual în editor cu unealta Path3D — asta e doar pentru verificare
+## rapidă, fără să depindem de o hartă reală care încă nu există.
 
 const CAR_SCENE: PackedScene = preload("res://scenes/vehicles/base/car_base.tscn")
 
@@ -41,6 +47,29 @@ func _ready() -> void:
 	junkyard.purchase_denied.connect(func(listing_id: String, reason: String) -> void: print("[Junkyard] cumpărare eșuată pentru '%s': %s" % [listing_id, reason]))
 
 	TimeOfDay.period_changed.connect(func(period: TimeOfDay.DayPeriod) -> void: print("[TimeOfDay] ora %.1f — perioadă nouă: %s" % [TimeOfDay.current_hour, TimeOfDay.DayPeriod.keys()[period]]))
+
+	_create_test_traffic_route()
+
+
+func _create_test_traffic_route() -> void:
+	var route: Path3D = Path3D.new()
+	route.name = "TestTrafficRoute"
+
+	var curve: Curve3D = Curve3D.new()
+	curve.add_point(Vector3(40, 0.5, 40))
+	curve.add_point(Vector3(40, 0.5, -40))
+	curve.add_point(Vector3(-40, 0.5, -40))
+	curve.add_point(Vector3(-40, 0.5, 40))
+	curve.add_point(Vector3(40, 0.5, 40))  # închide bucla, revenind la primul punct
+	route.curve = curve
+
+	add_child(route)
+
+	var spawner: TrafficSpawner = TrafficSpawner.new()
+	spawner.name = "TrafficSpawner"
+	spawner.vehicle_count = 4
+	spawner.route_loops = true
+	route.add_child(spawner)
 
 
 func _process(_delta: float) -> void:
