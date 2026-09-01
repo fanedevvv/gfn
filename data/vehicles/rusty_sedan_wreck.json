@@ -1,0 +1,13 @@
+{
+    "id": "rusty_sedan_wreck",
+    "display_name": "Sedan Ruginit (epavă)",
+    "scene_path": "res://scenes/vehicles/base/car_base.tscn",
+    "price": 350,
+    "description": "Merge, dar abia. Frânele sunt pe terminate, uleiul aproape gol.",
+    "condition": {
+        "brake_wear_percent": 25.0,
+        "clutch_wear_percent": 40.0,
+        "oil_level_percent": 10.0,
+        "tire_pressure_bar": 1.1
+    }
+}

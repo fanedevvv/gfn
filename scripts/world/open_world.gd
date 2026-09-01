@@ -11,15 +11,18 @@ extends Node3D
 ## vehicul vine într-un modul viitor (economie/garaj).
 ##
 ## Wiring de test pentru Workshop: tasta debug_repair_all (vezi Input Map)
-## repară tot cât timp mașina stă pe platforma galbenă. E doar pentru
-## verificare rapidă — dispare când vine Garage UI-ul real, care va apela
-## aceleași metode publice din Workshop la click pe buton.
+## repară tot cât timp mașina stă pe platforma galbenă. Wiring de test
+## pentru JunkyardVendor: tasta debug_buy_project_car cumpără epava cea
+## mai ieftină din catalog. Ambele sunt doar pentru verificare rapidă —
+## dispar când vine Garage UI-ul real, care va apela aceleași metode
+## publice din Workshop/JunkyardVendor la click pe buton.
 
 const CAR_SCENE: PackedScene = preload("res://scenes/vehicles/base/car_base.tscn")
 
 @onready var chunk_container: Node3D = $ChunkContainer
 @onready var spawn_point: Marker3D = $SpawnPoint
 @onready var workshop: Workshop = $Workshop
+@onready var junkyard: JunkyardVendor = $JunkyardVendor
 
 
 func _ready() -> void:
@@ -33,7 +36,14 @@ func _ready() -> void:
 	workshop.repair_completed.connect(func(_v: Node3D, part: String, cost: int) -> void: print("[Workshop] reparat '%s' pentru %d — fonduri rămase: %d" % [part, cost, EconomyManager.funds]))
 	workshop.repair_denied.connect(func(part: String, cost: int) -> void: print("[Workshop] fonduri insuficiente pentru '%s' (cost %d, ai %d)" % [part, cost, EconomyManager.funds]))
 
+	junkyard.catalog_loaded.connect(func(listings: Array[Dictionary]) -> void: print("[Junkyard] catalog încărcat: %d epave" % listings.size()))
+	junkyard.vehicle_purchased.connect(func(listing_id: String, _v: Node3D) -> void: print("[Junkyard] cumpărat '%s' — fonduri rămase: %d" % [listing_id, EconomyManager.funds]))
+	junkyard.purchase_denied.connect(func(listing_id: String, reason: String) -> void: print("[Junkyard] cumpărare eșuată pentru '%s': %s" % [listing_id, reason]))
+
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("debug_repair_all") and workshop.has_vehicle_in_range():
 		workshop.repair_all()
+
+	if Input.is_action_just_pressed("debug_buy_project_car"):
+		junkyard.purchase("project_car")

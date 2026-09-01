@@ -238,3 +238,32 @@ func inflate_tire(wheel_index: int) -> void:
 		return
 	tire_pressures[wheel_index] = tire_pressure_full_bar
 	tire_pressure_changed.emit(wheel_index, tire_pressures[wheel_index])
+
+
+# ---------------------------------------------------------------------------
+# STARE INIȚIALĂ — folosită de Junkyard la cumpărare (Modulul de Economie)
+# ---------------------------------------------------------------------------
+
+## Aplică o stare de uzură inițială dintr-un Dictionary (tipic citit din JSON-ul
+## de catalog al unei epave) — o mașină cumpărată de la cimitir nu pornește
+## "ca nouă". Cheile lipsă din `condition` rămân la valorile implicite.
+## Chei acceptate: brake_wear_percent, clutch_wear_percent, oil_level_percent,
+## tire_pressure_bar (aplicată identic pe toate roțile).
+func apply_condition(condition: Dictionary) -> void:
+	if condition.has("brake_wear_percent"):
+		brake_wear_percent = clamp(float(condition["brake_wear_percent"]), 0.0, 100.0)
+		brake_wear_changed.emit(brake_wear_percent)
+
+	if condition.has("clutch_wear_percent"):
+		clutch_wear_percent = clamp(float(condition["clutch_wear_percent"]), 0.0, 100.0)
+		clutch_wear_changed.emit(clutch_wear_percent)
+
+	if condition.has("oil_level_percent"):
+		oil_level_percent = clamp(float(condition["oil_level_percent"]), 0.0, 100.0)
+		oil_level_changed.emit(oil_level_percent)
+
+	if condition.has("tire_pressure_bar"):
+		var pressure: float = clamp(float(condition["tire_pressure_bar"]), 0.0, tire_pressure_full_bar)
+		for i in tire_pressures.size():
+			tire_pressures[i] = pressure
+			tire_pressure_changed.emit(i, pressure)

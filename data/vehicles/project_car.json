@@ -1,0 +1,13 @@
+{
+    "id": "project_car",
+    "display_name": "Mașină de proiect (aproape moartă)",
+    "scene_path": "res://scenes/vehicles/base/car_base.tscn",
+    "price": 120,
+    "description": "Ieftină pentru un motiv. Adu-ți uneltele.",
+    "condition": {
+        "brake_wear_percent": 8.0,
+        "clutch_wear_percent": 15.0,
+        "oil_level_percent": 5.0,
+        "tire_pressure_bar": 0.6
+    }
+}

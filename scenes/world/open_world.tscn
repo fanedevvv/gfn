@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/open_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/economy/workshop.tscn" id="2_workshop"]
+[ext_resource type="PackedScene" path="res://scenes/economy/junkyard_vendor.tscn" id="3_junkyard"]
 
 [node name="OpenWorld" type="Node3D"]
 script = ExtResource("1_world")
@@ -13,6 +14,10 @@ position = Vector3(0, 1, 0)
 
 [node name="Workshop" parent="." instance=ExtResource("2_workshop")]
 position = Vector3(15, 0, 0)
+
+[node name="JunkyardVendor" parent="." instance=ExtResource("3_junkyard")]
+position = Vector3(-20, 0, 0)
+vehicle_container_path = NodePath("..")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 position = Vector3(0, 20, 0)

@@ -1,0 +1,13 @@
+{
+    "id": "decent_hatchback",
+    "display_name": "Hatchback în stare acceptabilă",
+    "scene_path": "res://scenes/vehicles/base/car_base.tscn",
+    "price": 900,
+    "description": "Nu arată rău, dar tot are nevoie de un control tehnic.",
+    "condition": {
+        "brake_wear_percent": 65.0,
+        "clutch_wear_percent": 70.0,
+        "oil_level_percent": 55.0,
+        "tire_pressure_bar": 1.9
+    }
+}
