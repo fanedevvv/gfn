@@ -79,6 +79,8 @@ var flashlight_on: bool = false
 var flashlight_battery: float = 100.0
 var is_charging_flashlight: bool = false
 
+var _held_interactable: Object = null
+
 
 func _ready() -> void:
 	add_to_group("player")  # necesar pentru detecția de coliziune din silt_ai.gd (Modulul 2)
@@ -97,8 +99,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_handle_mouse_look(event)
 	elif event.is_action_pressed("ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	elif event.is_action_pressed("interact"):
-		_try_interact()
 	elif event.is_action_pressed("toggle_flashlight"):
 		_toggle_flashlight()
 
@@ -108,6 +108,7 @@ func _physics_process(delta: float) -> void:
 	_update_crouch(delta)
 	_handle_movement(delta)
 	_update_head_bob(delta)
+	_handle_interaction(delta)
 	move_and_slide()
 
 
@@ -289,7 +290,35 @@ func _handle_flashlight_charging(delta: float) -> void:
 
 # ---------------------------------------------------------------------------
 # INTERACȚIUNE — RayCast3D din centrul camerei
+#
+# Două moduri de interacțiune, ambele prin același RayCast3D:
+#   - "tap": apăsare scurtă -> collider.interact(player)   (uși, manete, butoane)
+#   - "hold": ținere apăsată -> collider.process_hold(player, delta), apelat
+#     în fiecare frame cât timp jucătorul ține tasta și privește ținta
+#     (valve, mecanisme cu progres — vezi scripts/components/interactable.gd)
 # ---------------------------------------------------------------------------
+
+func _handle_interaction(delta: float) -> void:
+	if Input.is_action_just_pressed("interact"):
+		_try_interact()
+
+	var collider: Object = interaction_ray.get_collider() if interaction_ray.is_colliding() else null
+	var is_holding_valid_target: bool = (
+		Input.is_action_pressed("interact")
+		and collider != null
+		and collider.has_method("process_hold")
+	)
+
+	if is_holding_valid_target:
+		if _held_interactable != collider and _held_interactable != null and _held_interactable.has_method("cancel_hold"):
+			_held_interactable.cancel_hold()
+		_held_interactable = collider
+		collider.process_hold(self, delta)
+	else:
+		if _held_interactable != null and _held_interactable.has_method("cancel_hold"):
+			_held_interactable.cancel_hold()
+		_held_interactable = null
+
 
 func _try_interact() -> void:
 	if not interaction_ray.is_colliding():
