@@ -70,6 +70,12 @@ signal gear_changed(gear_label: String)
 ## dacă e legat, rezistența de rulare a terenului (noroi/zăpadă) reduce
 ## eficiența motorului. Lasă gol pentru un vehicul fără aderență dinamică.
 @export var surface_grip_path: NodePath
+## Nod CollisionImpactSystem (vezi scripts/vehicles/collision_impact_system.gd)
+## — dacă e legat, primește impulsurile de coliziune ale șasiului (citite
+## aici, în _integrate_forces, singurul loc care are acces la
+## PhysicsDirectBodyState3D). Lasă gol pentru un vehicul fără consecințe
+## de coliziune (ex: mașini de trafic, care oricum nu au VehicleDamage).
+@export var collision_impact_path: NodePath
 
 @onready var wheel_fl: VehicleWheel3D = $WheelFL
 @onready var wheel_fr: VehicleWheel3D = $WheelFR
@@ -77,6 +83,7 @@ signal gear_changed(gear_label: String)
 @onready var wheel_rr: VehicleWheel3D = $WheelRR
 @onready var _vehicle_damage: VehicleDamage = _resolve_vehicle_damage()
 @onready var _surface_grip: SurfaceGripSystem = _resolve_surface_grip()
+@onready var _collision_impact: CollisionImpactSystem = _resolve_collision_impact()
 
 var current_gear: int = GEAR_NEUTRAL
 var gear_mode: GearMode = GearMode.AUTOMATIC
@@ -95,11 +102,49 @@ func _ready() -> void:
 	_configure_drivetrain()
 	_set_gear(GEAR_NEUTRAL)
 
+	if _collision_impact:
+		contact_monitor = true
+		max_contacts_reported = 8
+
+
+func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+	if _collision_impact == null:
+		return
+
+	# Contactele de aici sunt ale ȘASIULUI (CollisionShape3D-ul mașinii),
+	# NU ale roților — VehicleWheel3D își calculează contactul cu solul
+	# separat, prin propriul mecanism de suspensie, nu prin contact_monitor.
+	# Dar șasiul TOT poate atinge solul direct — un colț care zgârie
+	# asfaltul la o aterizare sau la o oscilație bruscă de suspensie.
+	# Verificat empiric: o atingere de sol are normala aproape verticală
+	# (~(0,1,0)), în timp ce un perete/obstacol are normala predominant
+	# orizontală — filtrăm după asta, nu doar după magnitudinea impulsului.
+	var max_impulse: float = 0.0
+	var impact_position: Vector3 = Vector3.ZERO
+	for i in state.get_contact_count():
+		var normal: Vector3 = state.get_contact_local_normal(i)
+		if absf(normal.y) > 0.5:
+			continue  # aproape vertical -> șasiul a atins solul/o rampă, nu un obstacol
+
+		var impulse: float = state.get_contact_impulse(i).length()
+		if impulse > max_impulse:
+			max_impulse = impulse
+			impact_position = state.get_contact_local_position(i)
+
+	if max_impulse > 0.0:
+		_collision_impact.report_impact(max_impulse, impact_position)
+
 
 func _resolve_vehicle_damage() -> VehicleDamage:
 	if vehicle_damage_path == NodePath():
 		return null
 	return get_node_or_null(vehicle_damage_path) as VehicleDamage
+
+
+func _resolve_collision_impact() -> CollisionImpactSystem:
+	if collision_impact_path == NodePath():
+		return null
+	return get_node_or_null(collision_impact_path) as CollisionImpactSystem
 
 
 func _resolve_surface_grip() -> SurfaceGripSystem:
