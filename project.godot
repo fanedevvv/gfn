@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.3", "Forward Plus")
 [autoload]
 
 WorldStreamer="*res://scripts/autoload/world_streamer.gd"
+EconomyManager="*res://scripts/autoload/economy_manager.gd"
 
 [physics]
 

@@ -76,6 +76,7 @@ var _wheel_radius: float = 0.35
 
 
 func _ready() -> void:
+	add_to_group("player_vehicle")  # necesar pentru zonele Workshop/Junkyard (Modulul de Economie)
 	# Raza roții e citită din roata din spate-stânga, nu duplicată într-un
 	# @export separat — evită desincronizarea dacă cineva schimbă doar una.
 	_wheel_radius = wheel_rl.wheel_radius
