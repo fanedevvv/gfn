@@ -9,13 +9,19 @@ extends Node3D
 ## mașinii, ignorând complet înclinarea caroseriei.
 ##
 ## Noduri copil necesare (vezi chase_camera.tscn):
-##   SpringArm3D (rotit 180° față de acest pivot — brațul "împinge" copiii
-##                de-a lungul propriului -Z; rotit 180°, asta înseamnă în
-##                spatele mașinii, nu în față. Lungimea se scurtează automat
-##                dacă un perete intră între cameră și mașină.)
-##     └── Camera3D (rotit încă 180° față de braț — anulează rotația
-##                   brațului, ca să privească înainte, în direcția de
-##                   mers, nu înapoi spre coada mașinii)
+##   SpringArm3D (rotație identică cu pivotul — brațul "împinge" copiii
+##                de-a lungul propriului -Z, care aici e chiar spatele
+##                mașinii; vezi nota despre VehicleBody3D mai jos. Lungimea
+##                se scurtează automat dacă un perete intră între cameră și mașină.)
+##     └── Camera3D (rotit 180° față de braț, ca să privească înainte, în
+##                   direcția de mers, nu înapoi spre coada mașinii)
+##
+## Verificat empiric (Godot 4.3 headless): acest VehicleBody3D se deplasează
+## pe +Z local sub engine_force pozitiv, nu -Z (convenția obișnuită
+## Node3D/Camera3D) — de-asta configurația de mai sus are o singură rotație
+## de 180° (pe Camera3D), nu două. Dacă vreodată se schimbă convenția de
+## mișcare a mașinii (ex: alt tip de vehicul), verifică din nou cu un test
+## ca cel din acest modul, nu presupune.
 ##
 ## Legare: apelează set_target(vehicle) din scena de joc — camera nu se
 ## leagă automat de nimic, la fel ca HUD-ul și Garage UI-ul.

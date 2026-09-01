@@ -137,9 +137,9 @@ func _update_steering(steer_input: float, delta: float) -> void:
 		deg_to_rad(max_steer_angle_deg), deg_to_rad(min_steer_angle_at_speed_deg), speed_ratio
 	)
 
-	# NOTĂ: dacă mașina virează invers față de tastă în joc, schimbă semnul
-	# de mai jos (convenția +/- pentru steering diferă în funcție de sensul
-	# de orientare al caroseriei tale) — se ajustează o singură dată la test.
+	# Semnul de mai jos e verificat empiric (Godot 4.3 headless, VehicleBody3D
+	# real): apăsând steer_right, mașina curbează spre partea ei dreaptă
+	# (+X local), exact cum trebuie — nu e o presupunere.
 	var target_angle: float = -steer_input * effective_max_steer
 
 	var rate: float = steer_speed if abs(steer_input) > 0.01 else steer_return_speed
@@ -245,7 +245,12 @@ func _get_gear_label() -> String:
 # ---------------------------------------------------------------------------
 
 func _get_forward_speed_mps() -> float:
-	return -global_transform.basis.z.dot(linear_velocity)
+	# Verificat empiric: acest VehicleBody3D se deplasează pe +Z local sub
+	# engine_force pozitiv (nu -Z, convenția obișnuită Node3D/Camera3D) —
+	# fără minus în față, altfel viteza reală ar ieși negativă la mers înainte.
+	# Momentan inofensiv oriunde e citită (mereu prin abs()), dar corect aici
+	# evită o capcană dacă cineva folosește vreodată valoarea cu semn.
+	return global_transform.basis.z.dot(linear_velocity)
 
 
 func _get_forward_speed_kmh() -> float:
