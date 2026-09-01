@@ -81,6 +81,7 @@ var is_charging_flashlight: bool = false
 
 
 func _ready() -> void:
+	add_to_group("player")  # necesar pentru detecția de coliziune din silt_ai.gd (Modulul 2)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	flashlight_battery = flashlight_max_battery
 	flashlight.visible = false
