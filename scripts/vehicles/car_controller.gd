@@ -1,3 +1,4 @@
+class_name CarController
 extends VehicleBody3D
 ## car_controller.gd — Modulul 1: Controller de bază pentru toate vehiculele.
 ##
@@ -54,10 +55,17 @@ signal gear_changed(gear_label: String)
 @export var reverse_ratio: float = 3.2
 @export var final_drive_ratio: float = 3.7
 
+@export_group("Componente opționale")
+## Nod VehicleDamage (vezi scripts/vehicles/vehicle_damage.gd) — dacă e
+## legat, uzura frânelor/ambreiajului/motorului influențează direct forța
+## de tracțiune și de frânare. Lasă gol pentru un vehicul fără uzură.
+@export var vehicle_damage_path: NodePath
+
 @onready var wheel_fl: VehicleWheel3D = $WheelFL
 @onready var wheel_fr: VehicleWheel3D = $WheelFR
 @onready var wheel_rl: VehicleWheel3D = $WheelRL
 @onready var wheel_rr: VehicleWheel3D = $WheelRR
+@onready var _vehicle_damage: VehicleDamage = _resolve_vehicle_damage()
 
 var current_gear: int = GEAR_NEUTRAL
 var gear_mode: GearMode = GearMode.AUTOMATIC
@@ -74,6 +82,12 @@ func _ready() -> void:
 	center_of_mass_mode = VehicleBody3D.CENTER_OF_MASS_MODE_CUSTOM
 	_configure_drivetrain()
 	_set_gear(GEAR_NEUTRAL)
+
+
+func _resolve_vehicle_damage() -> VehicleDamage:
+	if vehicle_damage_path == NodePath():
+		return null
+	return get_node_or_null(vehicle_damage_path) as VehicleDamage
 
 
 func _physics_process(delta: float) -> void:
@@ -137,12 +151,18 @@ func _update_drivetrain(throttle_input: float, brake_input: float, delta: float)
 	var ratio: float = _get_current_gear_ratio()
 	_update_engine_rpm(ratio, delta)
 
+	# Uzura (dacă vehiculul are un nod VehicleDamage legat) reduce direct
+	# forța de tracțiune (ambreiaj tocit / motor supraîncălzit) și eficiența
+	# de frânare (plăcuțe uzate) — nu sunt doar cifre cosmetice.
+	var engine_efficiency: float = _vehicle_damage.get_engine_efficiency() if _vehicle_damage else 1.0
+	var brake_efficiency: float = _vehicle_damage.get_brake_efficiency() if _vehicle_damage else 1.0
+
 	if ratio == 0.0 or _engine_rpm >= max_rpm:
 		engine_force = 0.0  # în N, sau la limitatorul de turație
 	else:
-		engine_force = throttle_input * max_engine_force * ratio
+		engine_force = throttle_input * max_engine_force * ratio * engine_efficiency
 
-	brake = brake_input * max_brake_force
+	brake = brake_input * max_brake_force * brake_efficiency
 
 
 func _update_engine_rpm(ratio: float, delta: float) -> void:
