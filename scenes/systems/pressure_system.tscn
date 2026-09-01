@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://scripts/systems/pressure_system.gd" id="1_pressure"]
-
-[node name="PressureSystem" type="Node"]
-script = ExtResource("1_pressure")
