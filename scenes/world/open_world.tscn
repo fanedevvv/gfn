@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/open_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/economy/workshop.tscn" id="2_workshop"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ai/speed_radar.tscn" id="5_radar"]
 [ext_resource type="PackedScene" path="res://scenes/ui/garage_ui.tscn" id="6_garage_ui"]
 [ext_resource type="PackedScene" path="res://scenes/vehicles/chase_camera.tscn" id="7_chase_camera"]
+[ext_resource type="PackedScene" path="res://scenes/economy/cargo_depot.tscn" id="8_cargo_depot"]
+[ext_resource type="PackedScene" path="res://scenes/economy/cargo_dropoff.tscn" id="9_cargo_dropoff"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_default"]
 
@@ -41,6 +43,17 @@ speed_limit_kmh = 50.0
 [node name="GarageUI" parent="." instance=ExtResource("6_garage_ui")]
 
 [node name="ChaseCamera" parent="." instance=ExtResource("7_chase_camera")]
+
+[node name="CargoDepot" parent="." instance=ExtResource("8_cargo_depot")]
+position = Vector3(0, 0, -15)
+
+[node name="CargoDropoffNorth" parent="." instance=ExtResource("9_cargo_dropoff")]
+position = Vector3(-15, 0, 35)
+dropoff_id = "depot_north"
+
+[node name="CargoDropoffMarket" parent="." instance=ExtResource("9_cargo_dropoff")]
+position = Vector3(35, 0, -10)
+dropoff_id = "market_central"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_default")

@@ -1,0 +1,7 @@
+{
+    "id": "contract_produce",
+    "description": "Marfă perisabilă -> Piață Centrală",
+    "destination_id": "market_central",
+    "payout": 180,
+    "time_limit_sec": 90
+}

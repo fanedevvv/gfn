@@ -26,6 +26,11 @@ extends Node3D
 ## patrula (dacă e în raza de detecție) intră în urmărire. Tasta
 ## debug_trigger_wanted forțează un nivel de căutare, ca test rapid fără
 ## să conduci până la radar.
+##
+## Wiring de test pentru contracte de marfă: CargoDepot lângă punctul de
+## spawn, două CargoDropoff pe traseul de test (depot_north, market_central).
+## Tasta debug_accept_contract preia primul contract disponibil din
+## catalog — livrarea se întâmplă singură când ajungi la dropoff-ul corect.
 
 const CAR_SCENE: PackedScene = preload("res://scenes/vehicles/base/car_base.tscn")
 const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
@@ -37,6 +42,7 @@ const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
 @onready var speed_radar: SpeedRadar = $SpeedRadar
 @onready var garage_ui: GarageUI = $GarageUI
 @onready var chase_camera: ChaseCamera = $ChaseCamera
+@onready var cargo_depot: CargoDepot = $CargoDepot
 
 
 func _ready() -> void:
@@ -55,8 +61,19 @@ func _ready() -> void:
 	WantedSystem.wanted_level_changed.connect(func(level: int) -> void: print("[WantedSystem] nivel de căutare: %d" % level))
 	WantedSystem.fine_issued.connect(func(amount: int, reason: String) -> void: print("[WantedSystem] amendă %d (%s) — fonduri rămase: %d" % [amount, reason, EconomyManager.funds]))
 
+	cargo_depot.contract_offer_accepted.connect(func(contract_id: String, _v: Node3D) -> void: print("[Cargo] contract preluat: %s" % contract_id))
+	cargo_depot.contract_offer_denied.connect(func(contract_id: String, reason: String) -> void: print("[Cargo] preluare eșuată '%s': %s" % [contract_id, reason]))
+
 	var route: Path3D = _create_test_traffic_route()
 	_spawn_test_police(route)
+	_connect_cargo_signals(car)
+
+
+func _connect_cargo_signals(car: VehicleBody3D) -> void:
+	var cargo_hold: CargoHold = car.get_node("CargoHold")
+	cargo_hold.contract_accepted.connect(func(contract: Dictionary) -> void: print("[Cargo] transporți: %s (plată %d$)" % [contract.get("description"), contract.get("payout")]))
+	cargo_hold.contract_completed.connect(func(contract: Dictionary, payout: int) -> void: print("[Cargo] livrat: %s — +%d$, fonduri: %d$" % [contract.get("description"), payout, EconomyManager.funds]))
+	cargo_hold.contract_failed.connect(func(contract: Dictionary, reason: String) -> void: print("[Cargo] eșuat: %s (%s)" % [contract.get("description"), reason]))
 
 
 func _create_test_traffic_route() -> Path3D:
@@ -92,3 +109,8 @@ func _spawn_test_police(route: Path3D) -> void:
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("debug_trigger_wanted"):
 		WantedSystem.report_violation(null, 0, "debug")
+
+	if Input.is_action_just_pressed("debug_accept_contract"):
+		var available: Array[Dictionary] = cargo_depot.get_available_contracts()
+		if not available.is_empty():
+			cargo_depot.accept_contract(available[0].get("id"))

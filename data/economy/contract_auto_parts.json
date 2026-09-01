@@ -1,0 +1,7 @@
+{
+    "id": "contract_auto_parts",
+    "description": "Piese auto -> Depozit Nord",
+    "destination_id": "depot_north",
+    "payout": 250,
+    "time_limit_sec": 120
+}

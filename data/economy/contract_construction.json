@@ -1,0 +1,7 @@
+{
+    "id": "contract_construction",
+    "description": "Materiale de construcție -> Șantier Est",
+    "destination_id": "site_east",
+    "payout": 400,
+    "time_limit_sec": 0
+}
