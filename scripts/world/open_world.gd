@@ -36,6 +36,7 @@ const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
 @onready var junkyard: JunkyardVendor = $JunkyardVendor
 @onready var speed_radar: SpeedRadar = $SpeedRadar
 @onready var garage_ui: GarageUI = $GarageUI
+@onready var chase_camera: ChaseCamera = $ChaseCamera
 
 
 func _ready() -> void:
@@ -43,6 +44,7 @@ func _ready() -> void:
 	car.position = spawn_point.position
 	add_child(car)
 	WorldStreamer.start(car, chunk_container)
+	chase_camera.set_target(car)
 
 	garage_ui.bind_workshop(workshop)
 	garage_ui.bind_junkyard(junkyard)
