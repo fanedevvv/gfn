@@ -1,3 +1,4 @@
+class_name GarageUI
 extends CanvasLayer
 ## garage_ui.gd — UI pentru Atelier + Junkyard.
 ##
