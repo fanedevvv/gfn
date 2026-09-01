@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ai/speed_radar.gd" id="1_radar"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
+size = Vector3(14, 3, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pole"]
+size = Vector3(0.3, 3, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pole"]
+albedo_color = Color(0.9, 0.15, 0.15, 1)
+
+[node name="SpeedRadar" type="Area3D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1_radar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1.5, 0)
+shape = SubResource("BoxShape3D_zone")
+
+[node name="PoleMesh" type="MeshInstance3D" parent="."]
+position = Vector3(7, 1.5, 0)
+mesh = SubResource("BoxMesh_pole")
+surface_material_override/0 = SubResource("StandardMaterial3D_pole")

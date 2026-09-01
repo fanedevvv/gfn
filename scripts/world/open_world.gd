@@ -17,18 +17,27 @@ extends Node3D
 ## dispar când vine Garage UI-ul real, care va apela aceleași metode
 ## publice din Workshop/JunkyardVendor la click pe buton.
 ##
-## Traseu de test pentru Trafic AI: construit direct din cod (Path3D +
-## Curve3D), un patrulater simplu de 80x80m în jurul originii, populat
-## automat cu TrafficSpawner. Într-un nivel real, drumurile se desenează
-## manual în editor cu unealta Path3D — asta e doar pentru verificare
-## rapidă, fără să depindem de o hartă reală care încă nu există.
+## Traseu de test pentru Trafic AI + Poliție: construit direct din cod
+## (Path3D + Curve3D), un patrulater simplu de 80x80m în jurul originii,
+## populat automat cu TrafficSpawner și o patrulă de poliție. Într-un nivel
+## real, drumurile se desenează manual în editor cu unealta Path3D — asta
+## e doar pentru verificare rapidă, fără să depindem de o hartă reală care
+## încă nu există.
+##
+## Wiring de test pentru radar/poliție: SpeedRadar e plasat pe latura de
+## sus a patrulaterului (40 km/h limită) — depășește-o cu mașina și
+## patrula (dacă e în raza de detecție) intră în urmărire. Tasta
+## debug_trigger_wanted forțează un nivel de căutare, ca test rapid fără
+## să conduci până la radar.
 
 const CAR_SCENE: PackedScene = preload("res://scenes/vehicles/base/car_base.tscn")
+const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
 
 @onready var chunk_container: Node3D = $ChunkContainer
 @onready var spawn_point: Marker3D = $SpawnPoint
 @onready var workshop: Workshop = $Workshop
 @onready var junkyard: JunkyardVendor = $JunkyardVendor
+@onready var speed_radar: SpeedRadar = $SpeedRadar
 
 
 func _ready() -> void:
@@ -48,10 +57,15 @@ func _ready() -> void:
 
 	TimeOfDay.period_changed.connect(func(period: TimeOfDay.DayPeriod) -> void: print("[TimeOfDay] ora %.1f — perioadă nouă: %s" % [TimeOfDay.current_hour, TimeOfDay.DayPeriod.keys()[period]]))
 
-	_create_test_traffic_route()
+	speed_radar.speed_violation.connect(func(_v: Node3D, speed_kmh: float, over: float) -> void: print("[Radar] depășire: %.0f km/h (+%.0f peste limită)" % [speed_kmh, over]))
+	WantedSystem.wanted_level_changed.connect(func(level: int) -> void: print("[WantedSystem] nivel de căutare: %d" % level))
+	WantedSystem.fine_issued.connect(func(amount: int, reason: String) -> void: print("[WantedSystem] amendă %d (%s) — fonduri rămase: %d" % [amount, reason, EconomyManager.funds]))
+
+	var route: Path3D = _create_test_traffic_route()
+	_spawn_test_police(route)
 
 
-func _create_test_traffic_route() -> void:
+func _create_test_traffic_route() -> Path3D:
 	var route: Path3D = Path3D.new()
 	route.name = "TestTrafficRoute"
 
@@ -71,6 +85,15 @@ func _create_test_traffic_route() -> void:
 	spawner.route_loops = true
 	route.add_child(spawner)
 
+	return route
+
+
+func _spawn_test_police(route: Path3D) -> void:
+	var police: PolicePatrol = POLICE_SCENE.instantiate()
+	add_child(police)
+	police.global_position = Vector3(40, 1, -20)
+	police.set_patrol_route(route)
+
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("debug_repair_all") and workshop.has_vehicle_in_range():
@@ -78,3 +101,6 @@ func _process(_delta: float) -> void:
 
 	if Input.is_action_just_pressed("debug_buy_project_car"):
 		junkyard.purchase("project_car")
+
+	if Input.is_action_just_pressed("debug_trigger_wanted"):
+		WantedSystem.report_violation(null, 0, "debug")
