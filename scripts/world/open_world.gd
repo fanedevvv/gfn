@@ -40,6 +40,8 @@ func _ready() -> void:
 	junkyard.vehicle_purchased.connect(func(listing_id: String, _v: Node3D) -> void: print("[Junkyard] cumpărat '%s' — fonduri rămase: %d" % [listing_id, EconomyManager.funds]))
 	junkyard.purchase_denied.connect(func(listing_id: String, reason: String) -> void: print("[Junkyard] cumpărare eșuată pentru '%s': %s" % [listing_id, reason]))
 
+	TimeOfDay.period_changed.connect(func(period: TimeOfDay.DayPeriod) -> void: print("[TimeOfDay] ora %.1f — perioadă nouă: %s" % [TimeOfDay.current_hour, TimeOfDay.DayPeriod.keys()[period]]))
+
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("debug_repair_all") and workshop.has_vehicle_in_range():
