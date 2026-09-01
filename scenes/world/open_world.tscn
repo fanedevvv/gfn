@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/open_world.gd" id="1_world"]
+
+[node name="OpenWorld" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="ChunkContainer" type="Node3D" parent="."]
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+position = Vector3(0, 1, 0)
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+position = Vector3(0, 20, 0)
+rotation_degrees = Vector3(-50, -30, 0)
+light_energy = 1.1
+shadow_enabled = true
