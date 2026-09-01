@@ -36,12 +36,18 @@ signal gear_changed(gear_label: String)
 @export var drivetrain: DrivetrainType = DrivetrainType.RWD
 
 @export_group("Motor")
-@export var max_engine_force: float = 900.0
+## Tunat empiric (Godot 4.3 headless, VehicleBody3D real): 2800 dă 0-100 km/h
+## în ~10.8s cu marjă sigură sub pragul de instabilitate (peste ~2800 combinat
+## cu wheel_friction_slip mare, șasiul face wheelie/se răstoarnă — verificat).
+@export var max_engine_force: float = 2800.0
 @export var idle_rpm: float = 800.0
 @export var max_rpm: float = 6500.0
 
 @export_group("Frâne")
-@export var max_brake_force: float = 60.0
+## Tunat empiric alături de max_engine_force — cu vechea valoare (60), oprirea
+## din ~90 km/h dura 5.5s/30m (prea moale pentru motorul nou). 160 oprește în
+## ~2.4s/14m, credibil fără să fie instant.
+@export var max_brake_force: float = 160.0
 
 @export_group("Direcție")
 @export var max_steer_angle_deg: float = 35.0

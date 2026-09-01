@@ -41,7 +41,7 @@ suspension_stiffness = 60.0
 suspension_max_force = 6000.0
 damping_compression = 0.5
 damping_relaxation = 0.8
-wheel_friction_slip = 4.0
+wheel_friction_slip = 6.0
 wheel_roll_influence = 0.05
 
 [node name="WheelFLMesh" type="MeshInstance3D" parent="WheelFL"]
@@ -57,7 +57,7 @@ suspension_stiffness = 60.0
 suspension_max_force = 6000.0
 damping_compression = 0.5
 damping_relaxation = 0.8
-wheel_friction_slip = 4.0
+wheel_friction_slip = 6.0
 wheel_roll_influence = 0.05
 
 [node name="WheelFRMesh" type="MeshInstance3D" parent="WheelFR"]
@@ -73,7 +73,7 @@ suspension_stiffness = 60.0
 suspension_max_force = 6000.0
 damping_compression = 0.5
 damping_relaxation = 0.8
-wheel_friction_slip = 4.0
+wheel_friction_slip = 6.0
 wheel_roll_influence = 0.05
 
 [node name="WheelRLMesh" type="MeshInstance3D" parent="WheelRL"]
@@ -89,7 +89,7 @@ suspension_stiffness = 60.0
 suspension_max_force = 6000.0
 damping_compression = 0.5
 damping_relaxation = 0.8
-wheel_friction_slip = 4.0
+wheel_friction_slip = 6.0
 wheel_roll_influence = 0.05
 
 [node name="WheelRRMesh" type="MeshInstance3D" parent="WheelRR"]
