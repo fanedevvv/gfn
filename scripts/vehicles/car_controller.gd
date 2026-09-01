@@ -66,12 +66,17 @@ signal gear_changed(gear_label: String)
 ## legat, uzura frânelor/ambreiajului/motorului influențează direct forța
 ## de tracțiune și de frânare. Lasă gol pentru un vehicul fără uzură.
 @export var vehicle_damage_path: NodePath
+## Nod SurfaceGripSystem (vezi scripts/vehicles/surface_grip_system.gd) —
+## dacă e legat, rezistența de rulare a terenului (noroi/zăpadă) reduce
+## eficiența motorului. Lasă gol pentru un vehicul fără aderență dinamică.
+@export var surface_grip_path: NodePath
 
 @onready var wheel_fl: VehicleWheel3D = $WheelFL
 @onready var wheel_fr: VehicleWheel3D = $WheelFR
 @onready var wheel_rl: VehicleWheel3D = $WheelRL
 @onready var wheel_rr: VehicleWheel3D = $WheelRR
 @onready var _vehicle_damage: VehicleDamage = _resolve_vehicle_damage()
+@onready var _surface_grip: SurfaceGripSystem = _resolve_surface_grip()
 
 var current_gear: int = GEAR_NEUTRAL
 var gear_mode: GearMode = GearMode.AUTOMATIC
@@ -95,6 +100,12 @@ func _resolve_vehicle_damage() -> VehicleDamage:
 	if vehicle_damage_path == NodePath():
 		return null
 	return get_node_or_null(vehicle_damage_path) as VehicleDamage
+
+
+func _resolve_surface_grip() -> SurfaceGripSystem:
+	if surface_grip_path == NodePath():
+		return null
+	return get_node_or_null(surface_grip_path) as SurfaceGripSystem
 
 
 func _physics_process(delta: float) -> void:
@@ -163,6 +174,12 @@ func _update_drivetrain(throttle_input: float, brake_input: float, delta: float)
 	# de frânare (plăcuțe uzate) — nu sunt doar cifre cosmetice.
 	var engine_efficiency: float = _vehicle_damage.get_engine_efficiency() if _vehicle_damage else 1.0
 	var brake_efficiency: float = _vehicle_damage.get_brake_efficiency() if _vehicle_damage else 1.0
+
+	# La fel, dacă vehiculul are un SurfaceGripSystem legat, terenul moale
+	# (noroi/zăpadă) fură din eficiența motorului — un singur loc (aici)
+	# scrie engine_force, ca să nu existe conflict de ordine între noduri.
+	if _surface_grip:
+		engine_efficiency *= 1.0 - _surface_grip.get_rolling_resistance()
 
 	if ratio == 0.0 or _engine_rpm >= max_rpm:
 		engine_force = 0.0  # în N, sau la limitatorul de turație

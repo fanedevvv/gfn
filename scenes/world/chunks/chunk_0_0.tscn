@@ -1,4 +1,6 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/components/terrain_surface.gd" id="1_surface"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
 size = Vector2(200, 200)
@@ -12,6 +14,10 @@ size = Vector3(200, 1, 200)
 [node name="Chunk_0_0" type="Node3D"]
 
 [node name="Ground" type="StaticBody3D" parent="."]
+script = ExtResource("1_surface")
+surface_id = 0
+grip_multiplier = 1.0
+rolling_resistance = 0.0
 
 [node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("PlaneMesh_ground")

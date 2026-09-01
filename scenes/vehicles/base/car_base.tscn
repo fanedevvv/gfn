@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/vehicles/car_controller.gd" id="1_car"]
 [ext_resource type="Script" path="res://scripts/vehicles/vehicle_damage.gd" id="2_damage"]
+[ext_resource type="Script" path="res://scripts/vehicles/surface_grip_system.gd" id="3_grip"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_chassis"]
 size = Vector3(1.8, 0.9, 4.2)
@@ -20,9 +21,13 @@ center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.4, 0)
 script = ExtResource("1_car")
 vehicle_damage_path = NodePath("VehicleDamage")
+surface_grip_path = NodePath("SurfaceGrip")
 
 [node name="VehicleDamage" type="Node" parent="."]
 script = ExtResource("2_damage")
+
+[node name="SurfaceGrip" type="Node" parent="."]
+script = ExtResource("3_grip")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 0.5, 0)
