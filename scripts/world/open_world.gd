@@ -10,12 +10,9 @@ extends Node3D
 ## de urmărit pentru WorldStreamer — sistemul complet de spawn/intrare-în-
 ## vehicul vine într-un modul viitor (economie/garaj).
 ##
-## Wiring de test pentru Workshop: tasta debug_repair_all (vezi Input Map)
-## repară tot cât timp mașina stă pe platforma galbenă. Wiring de test
-## pentru JunkyardVendor: tasta debug_buy_project_car cumpără epava cea
-## mai ieftină din catalog. Ambele sunt doar pentru verificare rapidă —
-## dispar când vine Garage UI-ul real, care va apela aceleași metode
-## publice din Workshop/JunkyardVendor la click pe buton.
+## GarageUI (panourile de Atelier/Junkyard) e legat de Workshop și
+## JunkyardVendor la _ready() — apare/dispare automat pe baza proximității,
+## fără nicio tastă de debug.
 ##
 ## Traseu de test pentru Trafic AI + Poliție: construit direct din cod
 ## (Path3D + Curve3D), un patrulater simplu de 80x80m în jurul originii,
@@ -38,6 +35,7 @@ const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
 @onready var workshop: Workshop = $Workshop
 @onready var junkyard: JunkyardVendor = $JunkyardVendor
 @onready var speed_radar: SpeedRadar = $SpeedRadar
+@onready var garage_ui: GarageUI = $GarageUI
 
 
 func _ready() -> void:
@@ -46,14 +44,8 @@ func _ready() -> void:
 	add_child(car)
 	WorldStreamer.start(car, chunk_container)
 
-	workshop.vehicle_entered.connect(func(_v: Node3D) -> void: print("[Workshop] mașină în zonă — fonduri: %d" % EconomyManager.funds))
-	workshop.vehicle_exited.connect(func(_v: Node3D) -> void: print("[Workshop] mașină ieșită din zonă"))
-	workshop.repair_completed.connect(func(_v: Node3D, part: String, cost: int) -> void: print("[Workshop] reparat '%s' pentru %d — fonduri rămase: %d" % [part, cost, EconomyManager.funds]))
-	workshop.repair_denied.connect(func(part: String, cost: int) -> void: print("[Workshop] fonduri insuficiente pentru '%s' (cost %d, ai %d)" % [part, cost, EconomyManager.funds]))
-
-	junkyard.catalog_loaded.connect(func(listings: Array[Dictionary]) -> void: print("[Junkyard] catalog încărcat: %d epave" % listings.size()))
-	junkyard.vehicle_purchased.connect(func(listing_id: String, _v: Node3D) -> void: print("[Junkyard] cumpărat '%s' — fonduri rămase: %d" % [listing_id, EconomyManager.funds]))
-	junkyard.purchase_denied.connect(func(listing_id: String, reason: String) -> void: print("[Junkyard] cumpărare eșuată pentru '%s': %s" % [listing_id, reason]))
+	garage_ui.bind_workshop(workshop)
+	garage_ui.bind_junkyard(junkyard)
 
 	TimeOfDay.period_changed.connect(func(period: TimeOfDay.DayPeriod) -> void: print("[TimeOfDay] ora %.1f — perioadă nouă: %s" % [TimeOfDay.current_hour, TimeOfDay.DayPeriod.keys()[period]]))
 
@@ -96,11 +88,5 @@ func _spawn_test_police(route: Path3D) -> void:
 
 
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("debug_repair_all") and workshop.has_vehicle_in_range():
-		workshop.repair_all()
-
-	if Input.is_action_just_pressed("debug_buy_project_car"):
-		junkyard.purchase("project_car")
-
 	if Input.is_action_just_pressed("debug_trigger_wanted"):
 		WantedSystem.report_violation(null, 0, "debug")

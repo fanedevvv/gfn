@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/open_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/economy/workshop.tscn" id="2_workshop"]
 [ext_resource type="PackedScene" path="res://scenes/economy/junkyard_vendor.tscn" id="3_junkyard"]
 [ext_resource type="Script" path="res://scripts/world/sun_controller.gd" id="4_sun"]
 [ext_resource type="PackedScene" path="res://scenes/ai/speed_radar.tscn" id="5_radar"]
+[ext_resource type="PackedScene" path="res://scenes/ui/garage_ui.tscn" id="6_garage_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_default"]
 
@@ -35,6 +36,8 @@ vehicle_container_path = NodePath("..")
 position = Vector3(0, 0, 40)
 rotation_degrees = Vector3(0, 90, 0)
 speed_limit_kmh = 50.0
+
+[node name="GarageUI" parent="." instance=ExtResource("6_garage_ui")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_default")

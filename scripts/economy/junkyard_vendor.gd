@@ -15,11 +15,14 @@ extends Area3D
 ##
 ## Design: la fel ca Workshop, nu ascultă taste și nu desenează niciun
 ## meniu — expune catalogul (get_listings()) și purchase(listing_id).
-## Garage UI-ul (viitor) le folosește pentru panoul de cumpărare.
+## Garage UI-ul le folosește pentru panoul de cumpărare, arătat/ascuns pe
+## baza vehicle_entered/vehicle_exited (simetric cu Workshop).
 
 signal catalog_loaded(listings: Array[Dictionary])
 signal vehicle_purchased(listing_id: String, vehicle: Node3D)
 signal purchase_denied(listing_id: String, reason: String)
+signal vehicle_entered(vehicle: Node3D)
+signal vehicle_exited(vehicle: Node3D)
 
 @export var listings_folder: String = "res://data/vehicles/"
 @export_group("Spawn")
@@ -35,6 +38,8 @@ var _spawned_vehicles: Array[Node3D] = []
 
 func _ready() -> void:
 	_load_catalog()
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
 
 
 func get_listings() -> Array[Dictionary]:
@@ -42,6 +47,16 @@ func get_listings() -> Array[Dictionary]:
 	for value in _listings.values():
 		result.append(value)
 	return result
+
+
+func _on_body_entered(body: Node3D) -> void:
+	if body.is_in_group("player_vehicle"):
+		vehicle_entered.emit(body)
+
+
+func _on_body_exited(body: Node3D) -> void:
+	if body.is_in_group("player_vehicle"):
+		vehicle_exited.emit(body)
 
 
 func get_listing(listing_id: String) -> Dictionary:

@@ -37,6 +37,12 @@ func has_vehicle_in_range() -> bool:
 	return _vehicle_in_range != null
 
 
+## Folosit de UI ca să afișeze starea pieselor fără să-și dubleze propria
+## logică de căutare a nodului VehicleDamage.
+func get_vehicle_damage() -> VehicleDamage:
+	return _damage_in_range
+
+
 # ---------------------------------------------------------------------------
 # REPARAȚII — fiecare verifică fonduri prin EconomyManager înainte de a aplica
 # ---------------------------------------------------------------------------

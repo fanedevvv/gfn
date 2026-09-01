@@ -1,0 +1,186 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/garage_ui.gd" id="1_garage"]
+
+[node name="GarageUI" type="CanvasLayer"]
+script = ExtResource("1_garage")
+
+[node name="WorkshopPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -280.0
+offset_right = 340.0
+offset_bottom = -20.0
+
+[node name="Margin" type="MarginContainer" parent="WorkshopPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="WorkshopPanel/Margin"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "ATELIER"
+
+[node name="BrakesRow" type="HBoxContainer" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="WorkshopPanel/Margin/VBox/BrakesRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(70, 0)
+text = "Frâne"
+
+[node name="BrakesStatusLabel" type="Label" parent="WorkshopPanel/Margin/VBox/BrakesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "100%"
+
+[node name="BrakesCostLabel" type="Label" parent="WorkshopPanel/Margin/VBox/BrakesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "80$"
+
+[node name="BrakesButton" type="Button" parent="WorkshopPanel/Margin/VBox/BrakesRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repară"
+
+[node name="ClutchRow" type="HBoxContainer" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="WorkshopPanel/Margin/VBox/ClutchRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(70, 0)
+text = "Ambreiaj"
+
+[node name="ClutchStatusLabel" type="Label" parent="WorkshopPanel/Margin/VBox/ClutchRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "100%"
+
+[node name="ClutchCostLabel" type="Label" parent="WorkshopPanel/Margin/VBox/ClutchRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "120$"
+
+[node name="ClutchButton" type="Button" parent="WorkshopPanel/Margin/VBox/ClutchRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repară"
+
+[node name="OilRow" type="HBoxContainer" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="WorkshopPanel/Margin/VBox/OilRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(70, 0)
+text = "Ulei"
+
+[node name="OilStatusLabel" type="Label" parent="WorkshopPanel/Margin/VBox/OilRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "100%"
+
+[node name="OilCostLabel" type="Label" parent="WorkshopPanel/Margin/VBox/OilRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "30$"
+
+[node name="OilButton" type="Button" parent="WorkshopPanel/Margin/VBox/OilRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repară"
+
+[node name="TiresRow" type="HBoxContainer" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="WorkshopPanel/Margin/VBox/TiresRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(70, 0)
+text = "Roți"
+
+[node name="TiresStatusLabel" type="Label" parent="WorkshopPanel/Margin/VBox/TiresRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "100%"
+
+[node name="TiresCostLabel" type="Label" parent="WorkshopPanel/Margin/VBox/TiresRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(50, 0)
+text = "60$"
+
+[node name="TiresButton" type="Button" parent="WorkshopPanel/Margin/VBox/TiresRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repară"
+
+[node name="HSeparator" type="HSeparator" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="RepairAllRow" type="HBoxContainer" parent="WorkshopPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="RepairAllCostLabel" type="Label" parent="WorkshopPanel/Margin/VBox/RepairAllRow"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(170, 0)
+text = "0$"
+
+[node name="RepairAllButton" type="Button" parent="WorkshopPanel/Margin/VBox/RepairAllRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repară tot"
+
+[node name="WorkshopFeedbackLabel" type="Label" parent="WorkshopPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = ""
+
+[node name="JunkyardPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 360.0
+offset_bottom = 260.0
+
+[node name="Margin" type="MarginContainer" parent="JunkyardPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="JunkyardPanel/Margin"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="JunkyardPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "CIMITIRUL DE MAȘINI"
+
+[node name="ListingsContainer" type="VBoxContainer" parent="JunkyardPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="JunkyardFeedbackLabel" type="Label" parent="JunkyardPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = ""
