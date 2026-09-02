@@ -139,6 +139,14 @@ func _spawn_vehicle(listing: Dictionary) -> Node3D:
 	var packed_scene: PackedScene = load(scene_path)
 	var vehicle: Node3D = packed_scene.instantiate()
 	vehicle.position = _next_spawn_position()
+
+	# O epavă abia cumpărată nu trebuie să răspundă la tastatura jucătorului
+	# — CarController citește Input global, nu un canal per-vehicul, deci
+	# ar porni singură la accelerație dacă am lăsa-o "player controlled".
+	# Trebuie setat ÎNAINTE de add_child (gatează add_to_group în _ready()).
+	if vehicle is CarController:
+		vehicle.is_player_controlled = false
+
 	_get_vehicle_container().add_child(vehicle)
 
 	_apply_condition(vehicle, listing.get("condition", {}))

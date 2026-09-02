@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/open_world.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/economy/workshop.tscn" id="2_workshop"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/vehicles/chase_camera.tscn" id="7_chase_camera"]
 [ext_resource type="PackedScene" path="res://scenes/economy/cargo_depot.tscn" id="8_cargo_depot"]
 [ext_resource type="PackedScene" path="res://scenes/economy/cargo_dropoff.tscn" id="9_cargo_dropoff"]
+[ext_resource type="PackedScene" path="res://scenes/economy/tow_dropoff.tscn" id="10_tow_dropoff"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_default"]
 
@@ -54,6 +55,10 @@ dropoff_id = "depot_north"
 [node name="CargoDropoffMarket" parent="." instance=ExtResource("9_cargo_dropoff")]
 position = Vector3(35, 0, -10)
 dropoff_id = "market_central"
+
+[node name="TowDropoff" parent="." instance=ExtResource("10_tow_dropoff")]
+position = Vector3(35, 0, 20)
+payout = 300
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_default")

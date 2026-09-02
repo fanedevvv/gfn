@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/vehicles/car_controller.gd" id="1_car"]
 [ext_resource type="Script" path="res://scripts/vehicles/vehicle_damage.gd" id="2_damage"]
 [ext_resource type="Script" path="res://scripts/vehicles/surface_grip_system.gd" id="3_grip"]
 [ext_resource type="Script" path="res://scripts/vehicles/collision_impact_system.gd" id="4_impact"]
 [ext_resource type="Script" path="res://scripts/vehicles/cargo_hold.gd" id="5_cargo"]
+[ext_resource type="Script" path="res://scripts/vehicles/towable.gd" id="6_towable"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_chassis"]
 size = Vector3(1.8, 0.9, 4.2)
@@ -19,6 +20,8 @@ height = 0.25
 
 [node name="CarBase" type="VehicleBody3D"]
 mass = 1400.0
+collision_layer = 1
+collision_mask = 1
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.4, 0)
 script = ExtResource("1_car")
@@ -37,6 +40,9 @@ script = ExtResource("4_impact")
 
 [node name="CargoHold" type="Node" parent="."]
 script = ExtResource("5_cargo")
+
+[node name="Towable" type="Node" parent="."]
+script = ExtResource("6_towable")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 position = Vector3(0, 0.5, 0)

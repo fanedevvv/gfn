@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/vehicles/base/car_base.tscn" id="1_base"]
+[ext_resource type="Script" path="res://scripts/vehicles/tow_hitch.gd" id="2_hitch"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitch_zone"]
+size = Vector3(2, 2, 3)
+
+[node name="TowTruck" instance=ExtResource("1_base")]
+mass = 2200.0
+max_engine_force = 2400.0
+max_brake_force = 200.0
+
+[node name="TowHitch" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("2_hitch")
+position = Vector3(0, 0.5, -2.8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TowHitch"]
+shape = SubResource("BoxShape3D_hitch_zone")

@@ -15,6 +15,8 @@ albedo_color = Color(0.5, 0.5, 0.55, 1)
 script = ExtResource("1_traffic")
 
 [node name="AnimatableBody3D" type="AnimatableBody3D" parent="."]
+collision_layer = 2
+collision_mask = 1
 sync_to_physics = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AnimatableBody3D"]

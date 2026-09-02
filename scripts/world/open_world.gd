@@ -31,7 +31,15 @@ extends Node3D
 ## spawn, două CargoDropoff pe traseul de test (depot_north, market_central).
 ## Tasta debug_accept_contract preia primul contract disponibil din
 ## catalog — livrarea se întâmplă singură când ajungi la dropoff-ul corect.
+##
+## Wiring de test pentru tractare: jucătorul conduce acum tow_truck.tscn
+## (moștenește car_base.tscn, doar cu TowHitch adăugat) — o mașină
+## "rablagită" (is_player_controlled=false, altfel ar răspunde și ea la
+## taste) apare imediat în spatele lui. Tasta debug_toggle_tow prinde/
+## eliberează manual, ca test rapid fără să dai cu spatele exact la ea.
+## TowDropoff plătește automat la sosire, ca și CargoDropoff.
 
+const TOW_TRUCK_SCENE: PackedScene = preload("res://scenes/vehicles/tow_truck.tscn")
 const CAR_SCENE: PackedScene = preload("res://scenes/vehicles/base/car_base.tscn")
 const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
 
@@ -44,13 +52,21 @@ const POLICE_SCENE: PackedScene = preload("res://scenes/ai/police_patrol.tscn")
 @onready var chase_camera: ChaseCamera = $ChaseCamera
 @onready var cargo_depot: CargoDepot = $CargoDepot
 
+var _tow_hitch: TowHitch = null
+
 
 func _ready() -> void:
-	var car: VehicleBody3D = CAR_SCENE.instantiate()
+	var car: VehicleBody3D = TOW_TRUCK_SCENE.instantiate()
 	car.position = spawn_point.position
 	add_child(car)
 	WorldStreamer.start(car, chunk_container)
 	chase_camera.set_target(car)
+
+	_tow_hitch = car.get_node("TowHitch")
+	_tow_hitch.vehicle_hitched.connect(func(v: Node3D) -> void: print("[TowHitch] prins: %s" % v.name))
+	_tow_hitch.vehicle_unhitched.connect(func(v: Node3D) -> void: print("[TowHitch] eliberat: %s" % v.name))
+	_tow_hitch.hitch_denied.connect(func(reason: String) -> void: print("[TowHitch] refuzat: %s" % reason))
+	_spawn_stranded_vehicle(car)
 
 	garage_ui.bind_workshop(workshop)
 	garage_ui.bind_junkyard(junkyard)
@@ -64,6 +80,9 @@ func _ready() -> void:
 	cargo_depot.contract_offer_accepted.connect(func(contract_id: String, _v: Node3D) -> void: print("[Cargo] contract preluat: %s" % contract_id))
 	cargo_depot.contract_offer_denied.connect(func(contract_id: String, reason: String) -> void: print("[Cargo] preluare eșuată '%s': %s" % [contract_id, reason]))
 
+	var tow_dropoff: TowDropoff = $TowDropoff
+	tow_dropoff.tow_delivered.connect(func(v: Node3D, payout: int) -> void: print("[TowDropoff] livrat %s — +%d$, fonduri: %d$" % [v.name, payout, EconomyManager.funds]))
+
 	var route: Path3D = _create_test_traffic_route()
 	_spawn_test_police(route)
 	_connect_cargo_signals(car)
@@ -74,6 +93,16 @@ func _connect_cargo_signals(car: VehicleBody3D) -> void:
 	cargo_hold.contract_accepted.connect(func(contract: Dictionary) -> void: print("[Cargo] transporți: %s (plată %d$)" % [contract.get("description"), contract.get("payout")]))
 	cargo_hold.contract_completed.connect(func(contract: Dictionary, payout: int) -> void: print("[Cargo] livrat: %s — +%d$, fonduri: %d$" % [contract.get("description"), payout, EconomyManager.funds]))
 	cargo_hold.contract_failed.connect(func(contract: Dictionary, reason: String) -> void: print("[Cargo] eșuat: %s (%s)" % [contract.get("description"), reason]))
+
+
+func _spawn_stranded_vehicle(truck: VehicleBody3D) -> void:
+	var stranded: VehicleBody3D = CAR_SCENE.instantiate()
+	# nu trebuie să răspundă la taste — vezi is_player_controlled în car_controller.gd
+	stranded.is_player_controlled = false
+	add_child(stranded)
+	# camionul are hitch-ul la z=-2.8 față de el (capătul care rămâne în urmă
+	# la mers pe +Z) — punem mașina rablagită imediat în spatele lui.
+	stranded.global_position = truck.global_position + Vector3(0, 0, -4.0)
 
 
 func _create_test_traffic_route() -> Path3D:
@@ -114,3 +143,9 @@ func _process(_delta: float) -> void:
 		var available: Array[Dictionary] = cargo_depot.get_available_contracts()
 		if not available.is_empty():
 			cargo_depot.accept_contract(available[0].get("id"))
+
+	if Input.is_action_just_pressed("debug_toggle_tow"):
+		if _tow_hitch.is_hitched():
+			_tow_hitch.detach()
+		else:
+			_tow_hitch.try_attach()

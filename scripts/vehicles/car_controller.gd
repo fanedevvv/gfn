@@ -23,6 +23,23 @@ extends VehicleBody3D
 const GEAR_REVERSE: int = -1
 const GEAR_NEUTRAL: int = 0
 
+## Bitul de layer fizic dedicat traficului AI (vezi traffic_car.tscn,
+## AnimatableBody3D.collision_layer = 2) — DELIBERAT separat de layer-ul 1
+## (vehicule/sol). Găsit prin testare directă (tractare + trafic AI activ):
+## dacă ORICE vehicul care nu e condus de jucător (o epavă tractată, o
+## mașină parcată) are traficul în propriul collision_mask, ansamblul se
+## poate bloca permanent — un vehicul complet nemișcat din trafic, la 40+ m
+## distanță, fără nicio coliziune reală posibilă, tot declanșează blocajul.
+## Cauza exactă n-a putut fi izolată la un parametru anume (nu ține de
+## solver_iterations, sleep, contact_monitor sau bruschețea accelerației —
+## toate testate individual); pare o interacțiune la nivelul broadphase-ului
+## motorului fizic Godot, sensibilă la simpla PREZENȚĂ a unui corp cu
+## layer-ul detectabil, nu la coliziunea reală. Soluția: doar vehiculul
+## CONDUS ACTIV de jucător își adaugă acest bit în _ready() (mai jos) — el
+## chiar trebuie să lovească fizic traficul; restul (epave, mașini tractate,
+## trafic-ul între ele) nu au nevoie, și evitându-l elimină blocajul complet.
+const TRAFFIC_COLLISION_LAYER_BIT: int = 2
+
 enum DrivetrainType { RWD, FWD, AWD }
 enum GearMode { AUTOMATIC, MANUAL }
 
@@ -31,6 +48,15 @@ enum GearMode { AUTOMATIC, MANUAL }
 signal speed_changed(speed_kmh: float)
 signal rpm_changed(rpm: float)
 signal gear_changed(gear_label: String)
+
+@export_group("Control")
+## False pentru un vehicul care NU trebuie să răspundă la tastatură (o
+## mașină rablagită tractată, o epavă abia cumpărată de la Junkyard încă
+## neintrată în ea). Fără asta, ORICE instanță CarController din scenă ar
+## răspunde simultan la aceleași taste — citesc Input global, nu un canal
+## per-vehicul. Descoperit direct testând tractarea: mașina "rablagită"
+## pornea singură la accelerație, înainte să existe vreun joint funcțional.
+@export var is_player_controlled: bool = true
 
 @export_group("Tracțiune")
 @export var drivetrain: DrivetrainType = DrivetrainType.RWD
@@ -94,7 +120,9 @@ var _wheel_radius: float = 0.35
 
 
 func _ready() -> void:
-	add_to_group("player_vehicle")  # necesar pentru zonele Workshop/Junkyard (Modulul de Economie)
+	if is_player_controlled:
+		add_to_group("player_vehicle")  # necesar pentru zonele Workshop/Junkyard (Modulul de Economie)
+		collision_mask |= TRAFFIC_COLLISION_LAYER_BIT  # vezi comentariul constantei — doar mașina condusă activ lovește traficul
 	# Raza roții e citită din roata din spate-stânga, nu duplicată într-un
 	# @export separat — evită desincronizarea dacă cineva schimbă doar una.
 	_wheel_radius = wheel_rl.wheel_radius
@@ -154,11 +182,16 @@ func _resolve_surface_grip() -> SurfaceGripSystem:
 
 
 func _physics_process(delta: float) -> void:
-	var throttle_input: float = Input.get_action_strength("throttle")
-	var brake_input: float = Input.get_action_strength("brake")
-	var steer_input: float = Input.get_axis("steer_left", "steer_right")
+	var throttle_input: float = 0.0
+	var brake_input: float = 0.0
+	var steer_input: float = 0.0
 
-	_handle_gear_shifting_input()
+	if is_player_controlled:
+		throttle_input = Input.get_action_strength("throttle")
+		brake_input = Input.get_action_strength("brake")
+		steer_input = Input.get_axis("steer_left", "steer_right")
+		_handle_gear_shifting_input()
+
 	_update_steering(steer_input, delta)
 	_update_drivetrain(throttle_input, brake_input, delta)
 	_update_telemetry()
